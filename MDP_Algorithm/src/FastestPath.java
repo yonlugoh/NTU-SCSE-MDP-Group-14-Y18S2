@@ -78,19 +78,19 @@ public class FastestPath {
                             break;
                         }
                     }
-                    if(isClosed) continue;
-
-                    int tempIndex = -1;
-                    for(int i = 0; i < openList.size(); i++){
-                        if(openList.get(i).x == posX+1 && openList.get(i).y == posY){
-                            tempIndex = i;
-                            break;
+                    if(!isClosed){
+                        int tempIndex = -1;
+                        for(int i = 0; i < openList.size(); i++){
+                            if(openList.get(i).x == posX+1 && openList.get(i).y == posY){
+                                tempIndex = i;
+                                break;
+                            }
                         }
-                    }
-                    if(tempIndex == -1){
-                        Node newNode = new Node(posX+1, posY, current.g+1, Math.abs(end.x - (posX+1)) + Math.abs(end.y - posY));
-                        newNode.parent = current;
-                        openList.add(newNode);
+                        if(tempIndex == -1){
+                            Node newNode = new Node(posX+1, posY, current.g+1, Math.abs(end.x - (posX+1)) + Math.abs(end.y - posY));
+                            newNode.parent = current;
+                            openList.add(newNode);
+                        }
                     }
                 }
 
@@ -102,43 +102,19 @@ public class FastestPath {
                             break;
                         }
                     }
-                    if(isClosed) continue;
-
-                    int tempIndex = -1;
-                    for(int i = 0; i < openList.size(); i++){
-                        if(openList.get(i).x == posX && openList.get(i).y == posY+1){
-                            tempIndex = i;
-                            break;
+                    if(!isClosed){
+                        int tempIndex = -1;
+                        for(int i = 0; i < openList.size(); i++){
+                            if(openList.get(i).x == posX && openList.get(i).y == posY+1){
+                                tempIndex = i;
+                                break;
+                            }
                         }
-                    }
-                    if(tempIndex == -1){
-                        Node newNode = new Node(posX, posY+1, current.g+1, Math.abs(end.x - posX) + Math.abs(end.y - (posY+1)));
-                        newNode.parent = current;
-                        openList.add(newNode);
-                    }
-                }
-
-                if(fpMap[posX-1][posY] == 1){
-                    isClosed = false;
-                    for(int i = 0; i < closedList.size(); i++){
-                        if(closedList.get(i).x == posX-1 && closedList.get(i).y == posY){
-                            isClosed = true;
-                            break;
+                        if(tempIndex == -1){
+                            Node newNode = new Node(posX, posY+1, current.g+1, Math.abs(end.x - posX) + Math.abs(end.y - (posY+1)));
+                            newNode.parent = current;
+                            openList.add(newNode);
                         }
-                    }
-                    if(isClosed) continue;
-
-                    int tempIndex = -1;
-                    for(int i = 0; i < openList.size(); i++){
-                        if(openList.get(i).x == posX-1 && openList.get(i).y == posY){
-                            tempIndex = i;
-                            break;
-                        }
-                    }
-                    if(tempIndex == -1){
-                        Node newNode = new Node(posX-1, posY, current.g+1, Math.abs(end.x - (posX-1)) + Math.abs(end.y - posY));
-                        newNode.parent = current;
-                        openList.add(newNode);
                     }
                 }
 
@@ -150,19 +126,43 @@ public class FastestPath {
                             break;
                         }
                     }
-                    if(isClosed) continue;
+                    if(!isClosed){
+                        int tempIndex = -1;
+                        for(int i = 0; i < openList.size(); i++){
+                            if(openList.get(i).x == posX && openList.get(i).y == posY-1){
+                                tempIndex = i;
+                                break;
+                            }
+                        }
+                        if(tempIndex == -1){
+                            Node newNode = new Node(posX, posY-1, current.g+1, Math.abs(end.x - posX) + Math.abs(end.y - (posY-1)));
+                            newNode.parent = current;
+                            openList.add(newNode);
+                        }
+                    }
+                }
 
-                    int tempIndex = -1;
-                    for(int i = 0; i < openList.size(); i++){
-                        if(openList.get(i).x == posX && openList.get(i).y == posY-1){
-                            tempIndex = i;
+                if(fpMap[posX-1][posY] == 1){
+                    isClosed = false;
+                    for(int i = 0; i < closedList.size(); i++){
+                        if(closedList.get(i).x == posX-1 && closedList.get(i).y == posY){
+                            isClosed = true;
                             break;
                         }
                     }
-                    if(tempIndex == -1){
-                        Node newNode = new Node(posX, posY-1, current.g+1, Math.abs(end.x - posX) + Math.abs(end.y - (posY-1)));
-                        newNode.parent = current;
-                        openList.add(newNode);
+                    if(!isClosed){
+                        int tempIndex = -1;
+                        for(int i = 0; i < openList.size(); i++){
+                            if(openList.get(i).x == posX-1 && openList.get(i).y == posY){
+                                tempIndex = i;
+                                break;
+                            }
+                        }
+                        if(tempIndex == -1){
+                            Node newNode = new Node(posX-1, posY, current.g+1, Math.abs(end.x - (posX-1)) + Math.abs(end.y - posY));
+                            newNode.parent = current;
+                            openList.add(newNode);
+                        }
                     }
                 }
 
@@ -248,6 +248,7 @@ public class FastestPath {
                 curD = 'W';
             }
         }
+        System.out.println(fp);
         return moves.toString().toCharArray();
     }
 
@@ -315,6 +316,7 @@ public class FastestPath {
                 curD = 'W';
             }
         }
+        System.out.println(fp);
 
         fp = getFastestPoints(waypoint, end);
         for(int i = 1; i < fp.size(); i++){
@@ -376,6 +378,7 @@ public class FastestPath {
                 curD = 'W';
             }
         }
+        System.out.println(fp);
         return moves.toString().toCharArray();
     }
 

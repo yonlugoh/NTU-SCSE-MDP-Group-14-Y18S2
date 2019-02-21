@@ -31,6 +31,7 @@ public class Simulator {
     private Robot robot;
     boolean isBackAtStart = false;
     Timer exploreTimer;
+    Timer exploreFPTimer;
     Timer fpTimer;
     Timer stopwatch;
     Point start = new Point(1, 1);
@@ -168,6 +169,7 @@ public class Simulator {
         fastestPath.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                pathMove = 0;
                 if(waypoint != null){
                     path = fp.getFastestPathWaypoint(start, end, robot.currentDirection, waypoint);
                 } else{
@@ -804,6 +806,16 @@ public class Simulator {
             exploreTimer.stop();
             stopwatch.stop();
             fp = new FastestPath(m.map);
+
+            pathMove = 0;
+            path = fp.getFastestPath(robot.currentPosition, start, robot.currentDirection);
+            exploreFPTimer = new Timer(timestep, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    goBackToStart();
+                }
+            });
+            exploreFPTimer.start();
         }
     }
 
@@ -918,6 +930,29 @@ public class Simulator {
         updateMap();
         pathMove++;
         if(pathMove == path.length) fpTimer.stop();
+    }
+
+    private void goBackToStart(){
+        switch(path[pathMove]) {
+            case 'M':
+                move();
+                System.out.println("Moved");
+                break;
+            case 'L':
+                turnLeft();
+                System.out.println("TL");
+                break;
+            case 'R':
+                turnRight();
+                System.out.println("TR");
+                break;
+            case 'B':
+                turnBack();
+                System.out.println("TB");
+        }
+        updateMap();
+        pathMove++;
+        if(pathMove == path.length) exploreFPTimer.stop();
     }
 
 }
