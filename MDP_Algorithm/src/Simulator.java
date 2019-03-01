@@ -29,7 +29,6 @@ public class Simulator {
     private JLabel timeElapsed = new JLabel("0");
     private Map m;
     private Robot robot;
-    boolean isBackAtStart = false;
     Timer exploreTimer;
     Timer exploreFPTimer;
     Timer fpTimer;
@@ -768,41 +767,47 @@ public class Simulator {
             }
         }
 
-        m.getMDFExplored();
-        m.getMDFObstacle();
     }
 
     private void explore(){
 
-        scan();
-        updateMap();
-        if(checkLeft()){
-            turnLeft();
+        if(m.isBackAtStart){
+            scan();
             updateMap();
-            move();
-            updateMap();
-        } else if(checkFront()){
-            move();
-            updateMap();
-        } else if(checkRight()){
-            turnRight();
-            updateMap();
-            move();
-            updateMap();
+            if(checkLeft()){
+                turnLeft();
+                updateMap();
+                move();
+                updateMap();
+            } else if(checkFront()){
+                move();
+                updateMap();
+            } else if(checkRight()){
+                turnRight();
+                updateMap();
+                move();
+                updateMap();
+            } else{
+                turnRight();
+                updateMap();
+            }
         } else{
-            turnRight();
-            updateMap();
+
+
+
         }
 
-        if(m.map[17][12] == 1 && m.map[17][13] == 1 && m.map[17][14] == 1 && m.map[18][12] == 1 && m.map[19][12] == 1)
-            m.isGoalFound = true;
+        if (!m.isBackAtStart){
+            if(robot.currentPosition.x == 1 && robot.currentPosition.y == 1){
+                m.isBackAtStart = true;
+            }
+        }
+
         checkFinishExploration();
     }
 
     private void checkFinishExploration(){
         if(Integer.parseInt(timeElapsed.getText()) >= Integer.parseInt(timeText.getText()) || Double.parseDouble(percentage.getText()) >= Double.parseDouble(exploreText.getText())){
-        //if(robot.currentPosition.x == 1 && robot.currentPosition.y == 1 && m.isGoalFound){
-            isBackAtStart = true;
             exploreTimer.stop();
             stopwatch.stop();
             fp = new FastestPath(m.map);

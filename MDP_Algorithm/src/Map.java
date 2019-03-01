@@ -10,7 +10,7 @@ public class Map {
     final Point endPoint = new Point(18, 13);
     int[][] map;
     int[][] simulatedMap;
-    boolean isGoalFound = false;
+    boolean isBackAtStart = false;
 
     public Map(){
         init();
