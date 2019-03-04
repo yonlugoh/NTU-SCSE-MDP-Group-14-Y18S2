@@ -76,6 +76,7 @@ public class Simulator {
                         if(fp.fpMap[ti][tj] == 1){
                             waypoint = new Point(ti, tj);
                             System.out.println("Waypoint set: (" + ti + ", " + tj + ")");
+                            mapButtons[ti][tj].setBackground(Color.ORANGE);
                         } else{
                             System.out.println("invalid waypoint");
                         }
