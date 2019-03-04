@@ -29,6 +29,8 @@ public class Simulator {
     private JLabel timeElapsed = new JLabel("0");
     private Map m;
     private Robot robot;
+    private int cur_i=-1;
+    private int cur_j=-1;
     Timer exploreTimer;
     Timer exploreFPTimer;
     Timer fpTimer;
@@ -70,13 +72,21 @@ public class Simulator {
                 mapButtons[i][j].setBackground(Color.DARK_GRAY);
                 final int ti = i;
                 final int tj = j;
+
+
                 mapButtons[i][j].addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         if(fp.fpMap[ti][tj] == 1){
+                            if (cur_i!= -1){
+                                mapButtons[cur_i][cur_j].setBackground(Color.WHITE);
+                            }
                             waypoint = new Point(ti, tj);
                             System.out.println("Waypoint set: (" + ti + ", " + tj + ")");
                             mapButtons[ti][tj].setBackground(Color.ORANGE);
+                            cur_i=ti;
+                            cur_j=tj;
+
                         } else{
                             System.out.println("invalid waypoint");
                         }
