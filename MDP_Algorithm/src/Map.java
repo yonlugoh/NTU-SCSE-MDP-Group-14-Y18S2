@@ -153,4 +153,13 @@ public class Map {
         }
     }
 
+    public void printMap(){
+        for(int i = 19; i > -1; i--){
+            for(int j = 0; j < 15; j++){
+                System.out.print(map[i][j]);
+            }
+            System.out.println();
+        }
+    }
+
 }

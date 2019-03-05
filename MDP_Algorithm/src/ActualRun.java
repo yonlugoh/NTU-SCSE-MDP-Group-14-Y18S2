@@ -1,255 +1,40 @@
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
 
-public class Simulator {
-
-    final int timestep = 100;
-
-    private JFrame frame;
-    private JPanel mapPanel;
-    private JPanel botPanel;
-    private JButton[][] mapButtons = new JButton[20][15];
-    private JButton back = new JButton("back");
-    private JButton left = new JButton("left");
-    private JButton right = new JButton("right");
-    private JButton move = new JButton("move");
-    private JLabel exploreLabel = new JLabel("Exploration Cutoff: ");
-    private JLabel timeLabel = new JLabel("Time Limit (seconds): ");
-    private JTextField exploreText = new JTextField("100");
-    private JTextField timeText = new JTextField("60");
-    private JButton loadMap = new JButton("Load Map");
-    private JButton explore = new JButton("Explore");
-    private JButton fastestPath = new JButton("Fastest Path");
-    private JLabel percentageLabel = new JLabel("Explored Area (%): ");
-    private JLabel timeElapsedLabel = new JLabel("Time Elapsed (seconds): ");
-    private JLabel percentage = new JLabel("0%");
-    private JLabel timeElapsed = new JLabel("0");
+public class ActualRun {
     private Map m;
     private Robot robot;
-    Timer exploreTimer;
-    Timer exploreFPTimer;
-    Timer fpTimer;
-    Timer stopwatch;
     Point start = new Point(1, 1);
     Point end = new Point(18, 13);
     Point waypoint;
     FastestPath fp;
     char path[];
     int time = 0;
-    int pathMove = 0;
+    TCPConnection connection;
 
-    public Simulator(){
-        init();
-        updateMap();
-    }
-
-    private void init(){
-        frame = new JFrame("Simulator");
-        frame.setSize(400, 700);
-
-        mapPanel = new JPanel();
-        mapPanel.setBounds(50, 50, 300, 400);
-        mapPanel.setLayout(new GridLayout(20,15));
-
-        botPanel = new JPanel();
-        botPanel.setBounds(50, 450, 300, 200);
-        botPanel.setLayout(null);
+    public ActualRun(){
+        connection = new TCPConnection("192.168.5.158", 5003);
 
         m = new Map();
-        //m = new Map("src/map1");
         robot = new Robot();
+    }
 
-        for(int i = 19; i > -1; i--){
-            for(int j = 0; j < 15; j++){
-                mapButtons[i][j] = new JButton();
-                mapButtons[i][j].setToolTipText("(" + i + ", " + j + ")");
-                mapButtons[i][j].setBounds(i * 20, j * 20, 20, 20);
-                mapButtons[i][j].setBackground(Color.DARK_GRAY);
-                final int ti = i;
-                final int tj = j;
-                mapButtons[i][j].addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        if(fp.fpMap[ti][tj] == 1){
-                            waypoint = new Point(ti, tj);
-                            System.out.println("Waypoint set: (" + ti + ", " + tj + ")");
-                        } else{
-                            System.out.println("invalid waypoint");
-                        }
-                    }
-                });
-                mapPanel.add(mapButtons[i][j]);
-            }
-        }
+    public void run(){
+        while(true){
+            String option = connection.getMessage();
 
-        back.setBounds(20, 0, 80, 20);
-        left.setBounds(100, 0, 80, 20);
-        right.setBounds(180, 0, 80, 20);
-        move.setBounds(100, 20, 80, 20);
-        exploreLabel.setBounds(60, 40, 160, 20);
-        timeLabel.setBounds(60, 60, 160, 20);
-        exploreText.setBounds(200, 40, 40, 20);
-        timeText.setBounds(200, 60, 40, 20);
-        loadMap.setBounds(60, 80, 180, 20);
-        explore.setBounds(60, 100, 180, 20);
-        fastestPath.setBounds(60, 120, 180, 20);
-        percentageLabel.setBounds(40, 140, 100, 20);
-        percentage.setBounds(140, 140, 60, 20);
-        timeElapsedLabel.setBounds(40, 160, 160, 20);
-        timeElapsed.setBounds(200, 160, 60, 20);
+            if(option.equals("start_e")){
+                explore();
+                String wpString = connection.getMessage();
+                waypoint = new Point(wpString.charAt(6), wpString.charAt(9));
 
-        back.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                turnBack();
-            }
-        });
-
-        left.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                turnLeft();
-            }
-        });
-
-        right.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                turnRight();
-            }
-        });
-
-        move.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                move();
-            }
-        });
-
-        loadMap.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser fileChooser = new JFileChooser();
-                fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
-                fileChooser.showOpenDialog(botPanel);
-                m = new Map(fileChooser.getSelectedFile().getPath());
-            }
-        });
-
-        explore.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                scan();
-                updateMap();
-
-                stopwatch = new Timer(1000, new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        time++;
-                        timeElapsed.setText(time + "");
-                    }
-                });
-                stopwatch.start();
-
-                exploreTimer = new Timer(timestep, new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        percentage.setText(String.format("%.2f", m.getPercentageExplored()));
-                        explore();
-                    }
-                });
-                exploreTimer.start();
-            }
-        });
-
-        fastestPath.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                pathMove = 0;
+            } else if(option.equals("start_f")){
                 if(waypoint != null){
                     path = fp.getFastestPathWaypoint(start, end, robot.currentDirection, waypoint);
                 } else{
                     path = fp.getFastestPath(start, end, robot.currentDirection);
                 }
-                fpTimer = new Timer(timestep, new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        fastestPath();
-                    }
-                });
-                fpTimer.start();
+                fastestPath();
             }
-        });
-
-        botPanel.add(back);
-        botPanel.add(left);
-        botPanel.add(right);
-        botPanel.add(move);
-        botPanel.add(exploreLabel);
-        botPanel.add(timeLabel);
-        botPanel.add(exploreText);
-        botPanel.add(timeText);
-        botPanel.add(loadMap);
-        botPanel.add(explore);
-        botPanel.add(fastestPath);
-        botPanel.add(percentageLabel);
-        botPanel.add(percentage);
-        botPanel.add(timeElapsedLabel);
-        botPanel.add(timeElapsed);
-
-        frame.add(mapPanel);
-        frame.add(botPanel);
-        frame.setLayout(null);
-        frame.setResizable(false);
-        frame.setVisible(true);
-    }
-
-    private void updateMap(){
-
-        for(int i = 0; i < 20; i++){
-            for(int j = 0; j < 15; j++){
-                if(m.map[i][j] == 0)
-                    mapButtons[i][j].setBackground(Color.DARK_GRAY);
-                else if(m.map[i][j] == 1)
-                    mapButtons[i][j].setBackground(Color.WHITE);
-                else if(m.map[i][j] == 2)
-                    mapButtons[i][j].setBackground(Color.RED);
-            }
-        }
-
-        for(int i = 0; i < 3; i++){
-            for(int j = 0; j < 3; j++){
-                mapButtons[i][j].setBackground(Color.BLUE);
-            }
-        }
-
-        for(int i = 17; i < 20; i++){
-            for(int j = 12; j < 15; j++){
-                mapButtons[i][j].setBackground(Color.BLUE);
-            }
-        }
-
-        mapButtons[robot.currentPosition.x][robot.currentPosition.y].setBackground(Color.GREEN);
-        mapButtons[robot.currentPosition.x+1][robot.currentPosition.y].setBackground(Color.GREEN);
-        mapButtons[robot.currentPosition.x][robot.currentPosition.y+1].setBackground(Color.GREEN);
-        mapButtons[robot.currentPosition.x+1][robot.currentPosition.y+1].setBackground(Color.GREEN);
-        mapButtons[robot.currentPosition.x-1][robot.currentPosition.y].setBackground(Color.GREEN);
-        mapButtons[robot.currentPosition.x][robot.currentPosition.y-1].setBackground(Color.GREEN);
-        mapButtons[robot.currentPosition.x-1][robot.currentPosition.y-1].setBackground(Color.GREEN);
-        mapButtons[robot.currentPosition.x+1][robot.currentPosition.y-1].setBackground(Color.GREEN);
-        mapButtons[robot.currentPosition.x-1][robot.currentPosition.y+1].setBackground(Color.GREEN);
-
-        if(robot.currentDirection == 'N'){
-            mapButtons[robot.currentPosition.x+1][robot.currentPosition.y].setBackground(Color.YELLOW);
-        } else if(robot.currentDirection == 'S') {
-            mapButtons[robot.currentPosition.x-1][robot.currentPosition.y].setBackground(Color.YELLOW);
-        } else if(robot.currentDirection == 'E') {
-            mapButtons[robot.currentPosition.x][robot.currentPosition.y+1].setBackground(Color.YELLOW);
-        } else if(robot.currentDirection == 'W'){
-            mapButtons[robot.currentPosition.x][robot.currentPosition.y-1].setBackground(Color.YELLOW);
         }
     }
 
@@ -263,6 +48,7 @@ public class Simulator {
         } else if(robot.currentDirection == 'W'){
             robot.currentDirection = 'S';
         }
+        connection.sendMessage("TURN LEFT");
     }
 
     private void turnRight(){
@@ -275,6 +61,7 @@ public class Simulator {
         } else if(robot.currentDirection == 'W'){
             robot.currentDirection = 'N';
         }
+        connection.sendMessage("TURN RIGHT");
     }
 
     private void turnBack(){
@@ -292,10 +79,11 @@ public class Simulator {
         } else if(robot.currentDirection == 'W'){
             robot.currentPosition.y--;
         }
+        connection.sendMessage("MOVE");
     }
 
     public void scan(){
-        int results[] = robot.getSensorReadings(m.simulatedMap);
+        int results[] = connection.getSensorReadings();
         //System.out.println(results[0] + " " + results[1] + " " + results[2] + " " + results[3] + " " + results[4] + " " + results[5]);
 
         if(robot.currentDirection == 'N'){
@@ -310,6 +98,7 @@ public class Simulator {
                     }
                 } catch(ArrayIndexOutOfBoundsException e){
                     for(int i = 1; i < results[0]; i++){
+                        System.out.println(results[0]);
                         m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 1 - i] = 1;
                     }
                 }
@@ -771,56 +560,29 @@ public class Simulator {
 
     private void explore(){
 
-        if(m.isBackAtStart){
+        while(!m.isBackAtStart) {
+            m.printMap();
             scan();
-            updateMap();
-            if(checkLeft()){
+            if (checkLeft()) {
                 turnLeft();
-                updateMap();
                 move();
-                updateMap();
-            } else if(checkFront()){
+            } else if (checkFront()) {
                 move();
-                updateMap();
-            } else if(checkRight()){
+            } else if (checkRight()) {
                 turnRight();
-                updateMap();
                 move();
-                updateMap();
-            } else{
+            } else {
                 turnRight();
-                updateMap();
             }
-        } else{
-
-
-
-        }
-
-        if (!m.isBackAtStart){
             if(robot.currentPosition.x == 1 && robot.currentPosition.y == 1){
                 m.isBackAtStart = true;
             }
         }
 
-        checkFinishExploration();
-    }
-
-    private void checkFinishExploration(){
-        if(Integer.parseInt(timeElapsed.getText()) >= Integer.parseInt(timeText.getText()) || Double.parseDouble(percentage.getText()) >= Double.parseDouble(exploreText.getText())){
-            exploreTimer.stop();
-            stopwatch.stop();
-            fp = new FastestPath(m.map);
-
-            pathMove = 0;
-            path = fp.getFastestPath(robot.currentPosition, start, robot.currentDirection);
-            exploreFPTimer = new Timer(timestep, new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    goBackToStart();
-                }
-            });
-            exploreFPTimer.start();
+        if(robot.currentDirection == 'W'){
+            turnRight();
+        } else if(robot.currentDirection == 'S'){
+            turnBack();
         }
     }
 
@@ -915,49 +677,36 @@ public class Simulator {
     }
 
     private void fastestPath(){
-        switch(path[pathMove]) {
-            case 'M':
-                move();
-                System.out.println("Moved");
-                break;
-            case 'L':
-                turnLeft();
-                System.out.println("TL");
-                break;
-            case 'R':
-                turnRight();
-                System.out.println("TR");
-                break;
-            case 'B':
-                turnBack();
-                System.out.println("TB");
+        for(int i = 0; i < path.length; i++){
+            switch(path[i]) {
+                case 'M':
+                    move();
+                    System.out.println("Moved");
+                    break;
+                case 'L':
+                    turnLeft();
+                    System.out.println("TL");
+                    break;
+                case 'R':
+                    turnRight();
+                    System.out.println("TR");
+                    break;
+                case 'B':
+                    turnBack();
+                    System.out.println("TB");
+            }
         }
-        updateMap();
-        pathMove++;
-        if(pathMove == path.length) fpTimer.stop();
     }
 
-    private void goBackToStart(){
-        switch(path[pathMove]) {
-            case 'M':
-                move();
-                System.out.println("Moved");
-                break;
-            case 'L':
-                turnLeft();
-                System.out.println("TL");
-                break;
-            case 'R':
-                turnRight();
-                System.out.println("TR");
-                break;
-            case 'B':
-                turnBack();
-                System.out.println("TB");
-        }
-        updateMap();
-        pathMove++;
-        if(pathMove == path.length) exploreFPTimer.stop();
+    private void updateAndroid(){
+        String robotDirection = "";
+        if(robot.currentDirection == 'N') robotDirection = "u";
+        else if(robot.currentDirection == 'S') robotDirection = "d";
+        else if(robot.currentDirection == 'E') robotDirection = "r";
+        else if(robot.currentDirection == 'W') robotDirection = "l";
+        connection.sendMessage("loc_{" + robot.currentPosition.x + "," + robot.currentPosition.y + "," + robotDirection + "}");
+
+        connection.sendMessage("loc_{" + m.getMDFExplored() + "," + m.getMDFObstacle() + "}");
     }
 
 }
