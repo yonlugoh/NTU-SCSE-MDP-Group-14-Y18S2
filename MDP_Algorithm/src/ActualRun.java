@@ -12,17 +12,20 @@ public class ActualRun {
     TCPConnection connection;
 
     public ActualRun(){
-        connection = new TCPConnection("192.168.5.158", 5003);
+        connection = new TCPConnection("192.168.14.14", 5003);
 
         m = new Map();
         robot = new Robot();
     }
 
     public void run(){
+        //connection.sendMessage("sFlush");
         while(true){
             String option = connection.getMessage();
 
             if(option.equals("start_e")){
+                System.out.println("Starting exploration");
+                scan(true);
                 explore();
                 String wpString = connection.getMessage();
                 waypoint = new Point(wpString.charAt(6), wpString.charAt(9));
@@ -48,7 +51,8 @@ public class ActualRun {
         } else if(robot.currentDirection == 'W'){
             robot.currentDirection = 'S';
         }
-        connection.sendMessage("TURN LEFT");
+        connection.sendMessage("sL");
+        scan(false);
     }
 
     private void turnRight(){
@@ -61,12 +65,22 @@ public class ActualRun {
         } else if(robot.currentDirection == 'W'){
             robot.currentDirection = 'N';
         }
-        connection.sendMessage("TURN RIGHT");
+        connection.sendMessage("sR");
+        scan(false);
     }
 
     private void turnBack(){
-        turnRight();
-        turnRight();
+        if(robot.currentDirection == 'N'){
+            robot.currentDirection = 'S';
+        } else if(robot.currentDirection == 'S') {
+            robot.currentDirection = 'N';
+        } else if(robot.currentDirection == 'E') {
+            robot.currentDirection = 'W';
+        } else if(robot.currentDirection == 'W'){
+            robot.currentDirection = 'E';
+        }
+        connection.sendMessage("sB");
+        scan(false);
     }
 
     public void move(){
@@ -79,12 +93,17 @@ public class ActualRun {
         } else if(robot.currentDirection == 'W'){
             robot.currentPosition.y--;
         }
-        connection.sendMessage("MOVE");
+        connection.sendMessage("sM");
+        scan(false);
     }
 
-    public void scan(){
-        int results[] = connection.getSensorReadings();
-        //System.out.println(results[0] + " " + results[1] + " " + results[2] + " " + results[3] + " " + results[4] + " " + results[5]);
+    public void scan(boolean firstScan){
+        int results[];
+        if(firstScan){
+            results = connection.getSensorReadings();
+        } else{
+            results = connection.getSensorReadings2();
+        }
 
         if(robot.currentDirection == 'N'){
 
@@ -98,7 +117,6 @@ public class ActualRun {
                     }
                 } catch(ArrayIndexOutOfBoundsException e){
                     for(int i = 1; i < results[0]; i++){
-                        System.out.println(results[0]);
                         m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 1 - i] = 1;
                     }
                 }
@@ -113,6 +131,7 @@ public class ActualRun {
                 try{
                     m.map[robot.currentPosition.x + 1][robot.currentPosition.y - 1 - results[1]] = 2;
                     results[1]--;
+
                     for(; results[1] > 0; results[1]--){
                         m.map[robot.currentPosition.x + 1][robot.currentPosition.y - 1 - results[1]] = 1;
                     }
@@ -561,8 +580,11 @@ public class ActualRun {
     private void explore(){
 
         while(!m.isBackAtStart) {
-            m.printMap();
-            scan();
+            updateAndroid();
+            if(checkCalibration()){
+                connection.sendMessage("sC");
+                connection.getMessage();
+            }
             if (checkLeft()) {
                 turnLeft();
                 move();
@@ -681,19 +703,15 @@ public class ActualRun {
             switch(path[i]) {
                 case 'M':
                     move();
-                    System.out.println("Moved");
                     break;
                 case 'L':
                     turnLeft();
-                    System.out.println("TL");
                     break;
                 case 'R':
                     turnRight();
-                    System.out.println("TR");
                     break;
                 case 'B':
                     turnBack();
-                    System.out.println("TB");
             }
         }
     }
@@ -704,9 +722,56 @@ public class ActualRun {
         else if(robot.currentDirection == 'S') robotDirection = "d";
         else if(robot.currentDirection == 'E') robotDirection = "r";
         else if(robot.currentDirection == 'W') robotDirection = "l";
-        connection.sendMessage("loc_{" + robot.currentPosition.x + "," + robot.currentPosition.y + "," + robotDirection + "}");
+        connection.sendMessage("bloc_{" + robot.currentPosition.x + "," + robot.currentPosition.y + "," + robotDirection + "}");
+        connection.getMessage();
+        connection.sendMessage("bmap_{" + m.getMDFExplored() + "," + m.getMDFObstacle() + "}");
+        connection.getMessage();
+    }
 
-        connection.sendMessage("loc_{" + m.getMDFExplored() + "," + m.getMDFObstacle() + "}");
+    private boolean checkCalibration(){
+        boolean result = false;
+        if(robot.currentDirection == 'N'){
+            try{
+                if(m.map[robot.currentPosition.x + 1][robot.currentPosition.y - 2] == 1
+                        && m.map[robot.currentPosition.x][robot.currentPosition.y - 2] == 1
+                        && m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 2] == 1){
+                    result = true;
+                }
+            } catch(Exception e){
+                result = true;
+            }
+        } else if(robot.currentDirection == 'S'){
+            try{
+                if(m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 2] == 1
+                        && m.map[robot.currentPosition.x][robot.currentPosition.y + 2] == 1
+                        && m.map[robot.currentPosition.x - 1][robot.currentPosition.y + 2] == 1){
+                    result = true;
+                }
+            } catch(Exception e){
+                result = true;
+            }
+        } else if(robot.currentDirection == 'E'){
+            try{
+                if(m.map[robot.currentPosition.x + 2][robot.currentPosition.y - 1] == 1
+                        && m.map[robot.currentPosition.x + 2][robot.currentPosition.y] == 1
+                        && m.map[robot.currentPosition.x + 2][robot.currentPosition.y + 1] == 1){
+                    result = true;
+                }
+            } catch(Exception e){
+                result = true;
+            }
+        } else if(robot.currentDirection == 'W'){
+            try{
+                if(m.map[robot.currentPosition.x - 2][robot.currentPosition.y - 1] == 1
+                        && m.map[robot.currentPosition.x - 2][robot.currentPosition.y] == 1
+                        && m.map[robot.currentPosition.x - 2][robot.currentPosition.y + 1] == 1){
+                    result = true;
+                }
+            } catch(Exception e){
+                result = true;
+            }
+        }
+        return result;
     }
 
 }
