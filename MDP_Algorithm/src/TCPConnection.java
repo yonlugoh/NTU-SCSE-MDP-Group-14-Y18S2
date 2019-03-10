@@ -48,10 +48,12 @@ public class TCPConnection {
         String res = getMessage();
         int[] result = processReadings(res);
 
-        for(int i = 0; i < 5; i++){
+        /*for(int i = 0; i < 5; i++){
             if(result[i] > 3) result[i] = 0;
         }
-        if(result[5] > 4) result[5] = 0;
+        if(result[5] > 4) result[5] = 0;*/
+
+        System.out.println(result[0] + " " + result[1] + " " + result[2] + " " + result[3] + " " + result[4] + " " + result[5]);
 
         return result;
     }
@@ -61,10 +63,12 @@ public class TCPConnection {
         String res = getMessage();
         int[] result = processReadings(res);
 
-        for(int i = 0; i < 5; i++){
+        /*for(int i = 0; i < 5; i++){
             if(result[i] > 3) result[i] = 0;
         }
-        if(result[5] > 4) result[5] = 0;
+        if(result[5] > 4) result[5] = 0;*/
+
+        System.out.println(result[0] + " " + result[1] + " " + result[2] + " " + result[3] + " " + result[4] + " " + result[5]);
 
         return result;
     }

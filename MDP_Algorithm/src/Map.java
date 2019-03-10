@@ -89,8 +89,7 @@ public class Map {
         for(int i = 0; i < 304; i+=4){
             res.append(bin2Hex(sb.substring(i, i+4)));
         }
-        System.out.println(res);
-        return res.substring(0);
+        return res.toString();
     }
 
     public String getMDFObstacle(){
@@ -105,13 +104,11 @@ public class Map {
         for(int i = 0; i < padNum; i++)
             sb.append("0");
 
-        System.out.println(sb);
         StringBuilder res = new StringBuilder();
         for(int i = 0; i < sb.length(); i+=4){
             res.append(bin2Hex(sb.substring(i, i+4)));
         }
-        System.out.println(res);
-        return res.substring(0);
+        return res.toString();
     }
 
     private String bin2Hex(String input){

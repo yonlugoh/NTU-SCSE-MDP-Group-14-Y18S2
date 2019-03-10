@@ -7,8 +7,8 @@ public class ActualRun {
     Point end = new Point(18, 13);
     Point waypoint;
     FastestPath fp;
+    String fastestMoves = "F";
     char path[];
-    int time = 0;
     TCPConnection connection;
 
     public ActualRun(){
@@ -19,7 +19,6 @@ public class ActualRun {
     }
 
     public void run(){
-        //connection.sendMessage("sFlush");
         while(true){
             String option = connection.getMessage();
 
@@ -27,16 +26,17 @@ public class ActualRun {
                 System.out.println("Starting exploration");
                 scan(true);
                 explore();
-                String wpString = connection.getMessage();
-                waypoint = new Point(wpString.charAt(6), wpString.charAt(9));
-
-            } else if(option.equals("start_f")){
                 if(waypoint != null){
                     path = fp.getFastestPathWaypoint(start, end, robot.currentDirection, waypoint);
                 } else{
                     path = fp.getFastestPath(start, end, robot.currentDirection);
                 }
+                processFastestPath();
+            } else if(option.equals("start_f")){
                 fastestPath();
+            } else if(option.substring(0,5).equals("set_w")){
+                waypoint = new Point(option.charAt(6), option.charAt(9));
+                System.out.println("Waypoint : " + waypoint.x + ", " + waypoint.y);
             }
         }
     }
@@ -116,14 +116,19 @@ public class ActualRun {
                         m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 1 - results[0]] = 1;
                     }
                 } catch(ArrayIndexOutOfBoundsException e){
-                    for(int i = 1; i < results[0]; i++){
-                        m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 1 - i] = 1;
-                    }
+                    try{
+                        for(int i = 1; i < results[0]; i++){
+                            m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 1 - i] = 1;
+                        }
+                    } catch(Exception e2){}
                 }
             } else{
-                m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 2] = 1;
-                m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 3] = 1;
-                m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 4] = 1;
+                try{
+                    m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 2] = 1;
+                    m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 3] = 1;
+                    m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 4] = 1;
+                    m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 5] = 1;
+                } catch(Exception e){}
             }
 
             //Sensor 2
@@ -136,14 +141,19 @@ public class ActualRun {
                         m.map[robot.currentPosition.x + 1][robot.currentPosition.y - 1 - results[1]] = 1;
                     }
                 } catch(ArrayIndexOutOfBoundsException e){
-                    for(int i = 1; i < results[1]; i++){
-                        m.map[robot.currentPosition.x + 1][robot.currentPosition.y - 1 - i] = 1;
-                    }
+                    try{
+                        for(int i = 1; i < results[1]; i++){
+                            m.map[robot.currentPosition.x + 1][robot.currentPosition.y - 1 - i] = 1;
+                        }
+                    } catch(Exception e2){}
                 }
             } else{
-                m.map[robot.currentPosition.x + 1][robot.currentPosition.y - 2] = 1;
-                m.map[robot.currentPosition.x + 1][robot.currentPosition.y - 3] = 1;
-                m.map[robot.currentPosition.x + 1][robot.currentPosition.y - 4] = 1;
+                try{
+                    m.map[robot.currentPosition.x + 1][robot.currentPosition.y - 2] = 1;
+                    m.map[robot.currentPosition.x + 1][robot.currentPosition.y - 3] = 1;
+                    m.map[robot.currentPosition.x + 1][robot.currentPosition.y - 4] = 1;
+                    m.map[robot.currentPosition.x + 1][robot.currentPosition.y - 5] = 1;
+                } catch(Exception e){}
             }
 
             //Sensor 3
@@ -155,14 +165,19 @@ public class ActualRun {
                         m.map[robot.currentPosition.x + 1 + results[2]][robot.currentPosition.y - 1] = 1;
                     }
                 } catch(ArrayIndexOutOfBoundsException e){
-                    for(int i = 1; i < results[2]; i++){
-                        m.map[robot.currentPosition.x + 1 + i][robot.currentPosition.y - 1] = 1;
-                    }
+                    try{
+                        for(int i = 1; i < results[2]; i++){
+                            m.map[robot.currentPosition.x + 1 + i][robot.currentPosition.y - 1] = 1;
+                        }
+                    } catch(Exception e2){}
                 }
             } else{
-                m.map[robot.currentPosition.x + 2][robot.currentPosition.y - 1] = 1;
-                m.map[robot.currentPosition.x + 3][robot.currentPosition.y - 1] = 1;
-                m.map[robot.currentPosition.x + 4][robot.currentPosition.y - 1] = 1;
+                try{
+                    m.map[robot.currentPosition.x + 2][robot.currentPosition.y - 1] = 1;
+                    m.map[robot.currentPosition.x + 3][robot.currentPosition.y - 1] = 1;
+                    m.map[robot.currentPosition.x + 4][robot.currentPosition.y - 1] = 1;
+                    m.map[robot.currentPosition.x + 5][robot.currentPosition.y - 1] = 1;
+                } catch(Exception e){}
             }
 
             //Sensor 4
@@ -174,14 +189,19 @@ public class ActualRun {
                         m.map[robot.currentPosition.x + 1 + results[3]][robot.currentPosition.y] = 1;
                     }
                 } catch(ArrayIndexOutOfBoundsException e){
-                    for(int i = 1; i < results[3]; i++){
-                        m.map[robot.currentPosition.x + 1 + i][robot.currentPosition.y] = 1;
-                    }
+                    try{
+                        for(int i = 1; i < results[3]; i++){
+                            m.map[robot.currentPosition.x + 1 + i][robot.currentPosition.y] = 1;
+                        }
+                    } catch(Exception e2){}
                 }
             } else{
-                m.map[robot.currentPosition.x + 2][robot.currentPosition.y] = 1;
-                m.map[robot.currentPosition.x + 3][robot.currentPosition.y] = 1;
-                m.map[robot.currentPosition.x + 4][robot.currentPosition.y] = 1;
+                try{
+                    m.map[robot.currentPosition.x + 2][robot.currentPosition.y] = 1;
+                    m.map[robot.currentPosition.x + 3][robot.currentPosition.y] = 1;
+                    m.map[robot.currentPosition.x + 4][robot.currentPosition.y] = 1;
+                    m.map[robot.currentPosition.x + 5][robot.currentPosition.y] = 1;
+                } catch(Exception e){}
             }
 
             //Sensor 5
@@ -193,14 +213,19 @@ public class ActualRun {
                         m.map[robot.currentPosition.x + 1 + results[4]][robot.currentPosition.y + 1] = 1;
                     }
                 } catch(ArrayIndexOutOfBoundsException e){
-                    for(int i = 1; i < results[4]; i++){
-                        m.map[robot.currentPosition.x + 1 + i][robot.currentPosition.y + 1] = 1;
-                    }
+                    try{
+                        for(int i = 1; i < results[4]; i++){
+                            m.map[robot.currentPosition.x + 1 + i][robot.currentPosition.y + 1] = 1;
+                        }
+                    } catch(Exception e2){}
                 }
             } else{
-                m.map[robot.currentPosition.x + 2][robot.currentPosition.y + 1] = 1;
-                m.map[robot.currentPosition.x + 3][robot.currentPosition.y + 1] = 1;
-                m.map[robot.currentPosition.x + 4][robot.currentPosition.y + 1] = 1;
+                try{
+                    m.map[robot.currentPosition.x + 2][robot.currentPosition.y + 1] = 1;
+                    m.map[robot.currentPosition.x + 3][robot.currentPosition.y + 1] = 1;
+                    m.map[robot.currentPosition.x + 4][robot.currentPosition.y + 1] = 1;
+                    m.map[robot.currentPosition.x + 5][robot.currentPosition.y + 1] = 1;
+                } catch(Exception e){}
             }
 
             //Sensor 6
@@ -212,15 +237,22 @@ public class ActualRun {
                         m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 1 + results[5]] = 1;
                     }
                 } catch(ArrayIndexOutOfBoundsException e){
-                    for(int i = 1; i < results[5]; i++){
-                        m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 1 + i] = 1;
-                    }
+                    try{
+                        for(int i = 1; i < results[5]; i++){
+                            m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 1 + i] = 1;
+                        }
+                    } catch(Exception e2){}
                 }
             } else{
-                m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 2] = 1;
-                m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 3] = 1;
-                m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 4] = 1;
-                m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 5] = 1;
+                try{
+                    m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 2] = 1;
+                    m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 3] = 1;
+                    m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 4] = 1;
+                    m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 5] = 1;
+                    m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 6] = 1;
+                    m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 7] = 1;
+                    m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 8] = 1;
+                } catch(Exception e){}
             }
 
         } else if(robot.currentDirection == 'S'){
@@ -234,14 +266,19 @@ public class ActualRun {
                         m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 1 + results[0]] = 1;
                     }
                 } catch(ArrayIndexOutOfBoundsException e){
-                    for(int i = 1; i < results[0]; i++){
-                        m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 1 + i] = 1;
-                    }
+                    try{
+                        for(int i = 1; i < results[0]; i++){
+                            m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 1 + i] = 1;
+                        }
+                    } catch(Exception e2){}
                 }
             } else{
-                m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 2] = 1;
-                m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 3] = 1;
-                m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 4] = 1;
+                try{
+                    m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 2] = 1;
+                    m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 3] = 1;
+                    m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 4] = 1;
+                    m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 5] = 1;
+                } catch(Exception e){}
             }
 
             //Sensor 2
@@ -253,14 +290,19 @@ public class ActualRun {
                         m.map[robot.currentPosition.x - 1][robot.currentPosition.y + 1 + results[1]] = 1;
                     }
                 } catch(ArrayIndexOutOfBoundsException e){
-                    for(int i = 1; i < results[1]; i++){
-                        m.map[robot.currentPosition.x - 1][robot.currentPosition.y + 1 + i] = 1;
-                    }
+                    try{
+                        for(int i = 1; i < results[1]; i++){
+                            m.map[robot.currentPosition.x - 1][robot.currentPosition.y + 1 + i] = 1;
+                        }
+                    } catch(Exception e2){}
                 }
             } else{
-                m.map[robot.currentPosition.x - 1][robot.currentPosition.y + 2] = 1;
-                m.map[robot.currentPosition.x - 1][robot.currentPosition.y + 3] = 1;
-                m.map[robot.currentPosition.x - 1][robot.currentPosition.y + 4] = 1;
+                try{
+                    m.map[robot.currentPosition.x - 1][robot.currentPosition.y + 2] = 1;
+                    m.map[robot.currentPosition.x - 1][robot.currentPosition.y + 3] = 1;
+                    m.map[robot.currentPosition.x - 1][robot.currentPosition.y + 4] = 1;
+                    m.map[robot.currentPosition.x - 1][robot.currentPosition.y + 5] = 1;
+                } catch(Exception e){}
             }
 
             //Sensor 3
@@ -272,14 +314,19 @@ public class ActualRun {
                         m.map[robot.currentPosition.x - 1 - results[2]][robot.currentPosition.y + 1] = 1;
                     }
                 } catch(ArrayIndexOutOfBoundsException e){
-                    for(int i = 1; i < results[2]; i++){
-                        m.map[robot.currentPosition.x - 1 - i][robot.currentPosition.y + 1] = 1;
-                    }
+                    try{
+                        for(int i = 1; i < results[2]; i++){
+                            m.map[robot.currentPosition.x - 1 - i][robot.currentPosition.y + 1] = 1;
+                        }
+                    } catch(Exception e2){}
                 }
             } else{
-                m.map[robot.currentPosition.x - 2][robot.currentPosition.y + 1] = 1;
-                m.map[robot.currentPosition.x - 3][robot.currentPosition.y + 1] = 1;
-                m.map[robot.currentPosition.x - 4][robot.currentPosition.y + 1] = 1;
+                try{
+                    m.map[robot.currentPosition.x - 2][robot.currentPosition.y + 1] = 1;
+                    m.map[robot.currentPosition.x - 3][robot.currentPosition.y + 1] = 1;
+                    m.map[robot.currentPosition.x - 4][robot.currentPosition.y + 1] = 1;
+                    m.map[robot.currentPosition.x - 5][robot.currentPosition.y + 1] = 1;
+                } catch(Exception e){}
             }
 
             //Sensor 4
@@ -291,14 +338,19 @@ public class ActualRun {
                         m.map[robot.currentPosition.x - 1 - results[3]][robot.currentPosition.y] = 1;
                     }
                 } catch(ArrayIndexOutOfBoundsException e){
-                    for(int i = 1; i < results[3]; i++){
-                        m.map[robot.currentPosition.x - 1 - i][robot.currentPosition.y] = 1;
-                    }
+                    try{
+                        for(int i = 1; i < results[3]; i++){
+                            m.map[robot.currentPosition.x - 1 - i][robot.currentPosition.y] = 1;
+                        }
+                    } catch(Exception e2){}
                 }
             } else{
-                m.map[robot.currentPosition.x - 2][robot.currentPosition.y] = 1;
-                m.map[robot.currentPosition.x - 3][robot.currentPosition.y] = 1;
-                m.map[robot.currentPosition.x - 4][robot.currentPosition.y] = 1;
+                try{
+                    m.map[robot.currentPosition.x - 2][robot.currentPosition.y] = 1;
+                    m.map[robot.currentPosition.x - 3][robot.currentPosition.y] = 1;
+                    m.map[robot.currentPosition.x - 4][robot.currentPosition.y] = 1;
+                    m.map[robot.currentPosition.x - 5][robot.currentPosition.y] = 1;
+                } catch(Exception e){}
             }
 
             //Sensor 5
@@ -310,14 +362,19 @@ public class ActualRun {
                         m.map[robot.currentPosition.x - 1 - results[4]][robot.currentPosition.y - 1] = 1;
                     }
                 } catch(ArrayIndexOutOfBoundsException e){
-                    for(int i = 1; i < results[4]; i++){
-                        m.map[robot.currentPosition.x - 1 - i][robot.currentPosition.y - 1] = 1;
-                    }
+                    try{
+                        for(int i = 1; i < results[4]; i++){
+                            m.map[robot.currentPosition.x - 1 - i][robot.currentPosition.y - 1] = 1;
+                        }
+                    } catch(Exception e2){}
                 }
             } else{
-                m.map[robot.currentPosition.x - 2][robot.currentPosition.y - 1] = 1;
-                m.map[robot.currentPosition.x - 3][robot.currentPosition.y - 1] = 1;
-                m.map[robot.currentPosition.x - 4][robot.currentPosition.y - 1] = 1;
+                try{
+                    m.map[robot.currentPosition.x - 2][robot.currentPosition.y - 1] = 1;
+                    m.map[robot.currentPosition.x - 3][robot.currentPosition.y - 1] = 1;
+                    m.map[robot.currentPosition.x - 4][robot.currentPosition.y - 1] = 1;
+                    m.map[robot.currentPosition.x - 5][robot.currentPosition.y - 1] = 1;
+                } catch(Exception e){}
             }
 
             //Sensor 6
@@ -329,15 +386,22 @@ public class ActualRun {
                         m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 1 - results[5]] = 1;
                     }
                 } catch(ArrayIndexOutOfBoundsException e){
-                    for(int i = 1; i < results[5]; i++){
-                        m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 1 - i] = 1;
-                    }
+                    try{
+                        for(int i = 1; i < results[5]; i++){
+                            m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 1 - i] = 1;
+                        }
+                    } catch(Exception e2){}
                 }
             } else{
-                m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 2] = 1;
-                m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 3] = 1;
-                m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 4] = 1;
-                m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 5] = 1;
+                try{
+                    m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 2] = 1;
+                    m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 3] = 1;
+                    m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 4] = 1;
+                    m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 5] = 1;
+                    m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 6] = 1;
+                    m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 7] = 1;
+                    m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 8] = 1;
+                } catch(Exception e){}
             }
 
         }else if(robot.currentDirection == 'E'){
@@ -351,14 +415,19 @@ public class ActualRun {
                         m.map[robot.currentPosition.x + 1 + results[0]][robot.currentPosition.y - 1] = 1;
                     }
                 } catch(ArrayIndexOutOfBoundsException e){
-                    for(int i = 1; i < results[0]; i++){
-                        m.map[robot.currentPosition.x + 1 + i][robot.currentPosition.y - 1] = 1;
-                    }
+                    try{
+                        for(int i = 1; i < results[0]; i++){
+                            m.map[robot.currentPosition.x + 1 + i][robot.currentPosition.y - 1] = 1;
+                        }
+                    } catch(Exception e2){}
                 }
             } else{
-                m.map[robot.currentPosition.x + 2][robot.currentPosition.y - 1] = 1;
-                m.map[robot.currentPosition.x + 3][robot.currentPosition.y - 1] = 1;
-                m.map[robot.currentPosition.x + 4][robot.currentPosition.y - 1] = 1;
+                try{
+                    m.map[robot.currentPosition.x + 2][robot.currentPosition.y - 1] = 1;
+                    m.map[robot.currentPosition.x + 3][robot.currentPosition.y - 1] = 1;
+                    m.map[robot.currentPosition.x + 4][robot.currentPosition.y - 1] = 1;
+                    m.map[robot.currentPosition.x + 5][robot.currentPosition.y - 1] = 1;
+                } catch(Exception e){}
             }
 
             //Sensor 2
@@ -370,14 +439,19 @@ public class ActualRun {
                         m.map[robot.currentPosition.x + 1 + results[1]][robot.currentPosition.y + 1] = 1;
                     }
                 } catch(ArrayIndexOutOfBoundsException e){
-                    for(int i = 1; i < results[1]; i++){
-                        m.map[robot.currentPosition.x + 1 + i][robot.currentPosition.y + 1] = 1;
-                    }
+                    try{
+                        for(int i = 1; i < results[1]; i++){
+                            m.map[robot.currentPosition.x + 1 + i][robot.currentPosition.y + 1] = 1;
+                        }
+                    } catch(Exception e2){}
                 }
             } else{
-                m.map[robot.currentPosition.x + 2][robot.currentPosition.y + 1] = 1;
-                m.map[robot.currentPosition.x + 3][robot.currentPosition.y + 1] = 1;
-                m.map[robot.currentPosition.x + 4][robot.currentPosition.y + 1] = 1;
+                try{
+                    m.map[robot.currentPosition.x + 2][robot.currentPosition.y + 1] = 1;
+                    m.map[robot.currentPosition.x + 3][robot.currentPosition.y + 1] = 1;
+                    m.map[robot.currentPosition.x + 4][robot.currentPosition.y + 1] = 1;
+                    m.map[robot.currentPosition.x + 5][robot.currentPosition.y + 1] = 1;
+                } catch(Exception e){}
             }
 
             //Sensor 3
@@ -389,14 +463,19 @@ public class ActualRun {
                         m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 1 + results[2]] = 1;
                     }
                 } catch(ArrayIndexOutOfBoundsException e){
-                    for(int i = 1; i < results[2]; i++){
-                        m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 1 + i] = 1;
-                    }
+                    try{
+                        for(int i = 1; i < results[2]; i++){
+                            m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 1 + i] = 1;
+                        }
+                    } catch(Exception e2){}
                 }
             } else{
-                m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 2] = 1;
-                m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 3] = 1;
-                m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 4] = 1;
+                try{
+                    m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 2] = 1;
+                    m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 3] = 1;
+                    m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 4] = 1;
+                    m.map[robot.currentPosition.x + 1][robot.currentPosition.y + 5] = 1;
+                } catch(Exception e){}
             }
 
             //Sensor 4
@@ -408,14 +487,19 @@ public class ActualRun {
                         m.map[robot.currentPosition.x][robot.currentPosition.y + 1 + results[3]] = 1;
                     }
                 } catch(ArrayIndexOutOfBoundsException e){
-                    for(int i = 1; i < results[3]; i++){
-                        m.map[robot.currentPosition.x][robot.currentPosition.y + 1 + i] = 1;
-                    }
+                    try{
+                        for(int i = 1; i < results[3]; i++){
+                            m.map[robot.currentPosition.x][robot.currentPosition.y + 1 + i] = 1;
+                        }
+                    } catch(Exception e2){}
                 }
             } else{
-                m.map[robot.currentPosition.x][robot.currentPosition.y + 2] = 1;
-                m.map[robot.currentPosition.x][robot.currentPosition.y + 3] = 1;
-                m.map[robot.currentPosition.x][robot.currentPosition.y + 4] = 1;
+                try{
+                    m.map[robot.currentPosition.x][robot.currentPosition.y + 2] = 1;
+                    m.map[robot.currentPosition.x][robot.currentPosition.y + 3] = 1;
+                    m.map[robot.currentPosition.x][robot.currentPosition.y + 4] = 1;
+                    m.map[robot.currentPosition.x][robot.currentPosition.y + 5] = 1;
+                } catch(Exception e){}
             }
 
             //Sensor 5
@@ -427,14 +511,19 @@ public class ActualRun {
                         m.map[robot.currentPosition.x - 1][robot.currentPosition.y + 1 + results[4]] = 1;
                     }
                 } catch(ArrayIndexOutOfBoundsException e){
-                    for(int i = 1; i < results[3]; i++){
-                        m.map[robot.currentPosition.x - 1][robot.currentPosition.y + 1 + i] = 1;
-                    }
+                    try{
+                        for(int i = 1; i < results[3]; i++){
+                            m.map[robot.currentPosition.x - 1][robot.currentPosition.y + 1 + i] = 1;
+                        }
+                    } catch(Exception e2){}
                 }
             } else{
-                m.map[robot.currentPosition.x - 1][robot.currentPosition.y + 2] = 1;
-                m.map[robot.currentPosition.x - 1][robot.currentPosition.y + 3] = 1;
-                m.map[robot.currentPosition.x - 1][robot.currentPosition.y + 4] = 1;
+                try{
+                    m.map[robot.currentPosition.x - 1][robot.currentPosition.y + 2] = 1;
+                    m.map[robot.currentPosition.x - 1][robot.currentPosition.y + 3] = 1;
+                    m.map[robot.currentPosition.x - 1][robot.currentPosition.y + 4] = 1;
+                    m.map[robot.currentPosition.x - 1][robot.currentPosition.y + 5] = 1;
+                } catch(Exception e){}
             }
 
             //Sensor 6
@@ -446,15 +535,22 @@ public class ActualRun {
                         m.map[robot.currentPosition.x - 1 - results[5]][robot.currentPosition.y + 1] = 1;
                     }
                 } catch(ArrayIndexOutOfBoundsException e){
-                    for(int i = 1; i < results[5]; i++){
-                        m.map[robot.currentPosition.x - 1 - i][robot.currentPosition.y + 1] = 1;
-                    }
+                    try{
+                        for(int i = 1; i < results[5]; i++){
+                            m.map[robot.currentPosition.x - i][robot.currentPosition.y + 1] = 1;
+                        }
+                    } catch(Exception e2){}
                 }
             } else{
-                m.map[robot.currentPosition.x - 2][robot.currentPosition.y + 1] = 1;
-                m.map[robot.currentPosition.x - 3][robot.currentPosition.y + 1] = 1;
-                m.map[robot.currentPosition.x - 4][robot.currentPosition.y + 1] = 1;
-                m.map[robot.currentPosition.x - 5][robot.currentPosition.y + 1] = 1;
+                try{
+                    m.map[robot.currentPosition.x - 2][robot.currentPosition.y + 1] = 1;
+                    m.map[robot.currentPosition.x - 3][robot.currentPosition.y + 1] = 1;
+                    m.map[robot.currentPosition.x - 4][robot.currentPosition.y + 1] = 1;
+                    m.map[robot.currentPosition.x - 5][robot.currentPosition.y + 1] = 1;
+                    m.map[robot.currentPosition.x - 6][robot.currentPosition.y + 1] = 1;
+                    m.map[robot.currentPosition.x - 7][robot.currentPosition.y + 1] = 1;
+                    m.map[robot.currentPosition.x - 8][robot.currentPosition.y + 1] = 1;
+                } catch(Exception e){}
             }
 
         }else if(robot.currentDirection == 'W'){
@@ -468,14 +564,19 @@ public class ActualRun {
                         m.map[robot.currentPosition.x - 1 - results[0]][robot.currentPosition.y + 1] = 1;
                     }
                 } catch(ArrayIndexOutOfBoundsException e){
-                    for(int i = 1; i < results[0]; i++){
-                        m.map[robot.currentPosition.x - 1 - i][robot.currentPosition.y + 1] = 1;
-                    }
+                    try{
+                        for(int i = 1; i < results[0]; i++){
+                            m.map[robot.currentPosition.x - 1 - i][robot.currentPosition.y + 1] = 1;
+                        }
+                    } catch(Exception e2){}
                 }
             } else{
-                m.map[robot.currentPosition.x - 2][robot.currentPosition.y + 1] = 1;
-                m.map[robot.currentPosition.x - 3][robot.currentPosition.y + 1] = 1;
-                m.map[robot.currentPosition.x - 4][robot.currentPosition.y + 1] = 1;
+                try{
+                    m.map[robot.currentPosition.x - 2][robot.currentPosition.y + 1] = 1;
+                    m.map[robot.currentPosition.x - 3][robot.currentPosition.y + 1] = 1;
+                    m.map[robot.currentPosition.x - 4][robot.currentPosition.y + 1] = 1;
+                    m.map[robot.currentPosition.x - 5][robot.currentPosition.y + 1] = 1;
+                } catch(Exception e){}
             }
 
             //Sensor 2
@@ -487,14 +588,19 @@ public class ActualRun {
                         m.map[robot.currentPosition.x - 1 - results[1]][robot.currentPosition.y - 1] = 1;
                     }
                 } catch(ArrayIndexOutOfBoundsException e){
-                    for(int i = 1; i < results[1]; i++){
-                        m.map[robot.currentPosition.x - 1 - i][robot.currentPosition.y - 1] = 1;
-                    }
+                    try{
+                        for(int i = 1; i < results[1]; i++){
+                            m.map[robot.currentPosition.x - 1 - i][robot.currentPosition.y - 1] = 1;
+                        }
+                    } catch(Exception e2){}
                 }
             } else{
-                m.map[robot.currentPosition.x - 2][robot.currentPosition.y - 1] = 1;
-                m.map[robot.currentPosition.x - 3][robot.currentPosition.y - 1] = 1;
-                m.map[robot.currentPosition.x - 4][robot.currentPosition.y - 1] = 1;
+                try{
+                    m.map[robot.currentPosition.x - 2][robot.currentPosition.y - 1] = 1;
+                    m.map[robot.currentPosition.x - 3][robot.currentPosition.y - 1] = 1;
+                    m.map[robot.currentPosition.x - 4][robot.currentPosition.y - 1] = 1;
+                    m.map[robot.currentPosition.x - 5][robot.currentPosition.y - 1] = 1;
+                } catch(Exception e){}
             }
 
             //Sensor 3
@@ -506,14 +612,19 @@ public class ActualRun {
                         m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 1 - results[2]] = 1;
                     }
                 } catch(ArrayIndexOutOfBoundsException e){
-                    for(int i = 1; i < results[2]; i++){
-                        m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 1 - i] = 1;
-                    }
+                    try{
+                        for(int i = 1; i < results[2]; i++){
+                            m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 1 - i] = 1;
+                        }
+                    } catch(Exception e2){}
                 }
             } else{
-                m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 2] = 1;
-                m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 3] = 1;
-                m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 4] = 1;
+                try{
+                    m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 2] = 1;
+                    m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 3] = 1;
+                    m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 4] = 1;
+                    m.map[robot.currentPosition.x - 1][robot.currentPosition.y - 5] = 1;
+                } catch(Exception e){}
             }
 
             //Sensor 4
@@ -525,14 +636,19 @@ public class ActualRun {
                         m.map[robot.currentPosition.x][robot.currentPosition.y - 1 - results[3]] = 1;
                     }
                 } catch(ArrayIndexOutOfBoundsException e){
-                    for(int i = 1; i < results[3]; i++){
-                        m.map[robot.currentPosition.x][robot.currentPosition.y - 1 - i] = 1;
-                    }
+                    try{
+                        for(int i = 1; i < results[3]; i++){
+                            m.map[robot.currentPosition.x][robot.currentPosition.y - 1 - i] = 1;
+                        }
+                    } catch(Exception e2){}
                 }
             } else{
-                m.map[robot.currentPosition.x][robot.currentPosition.y - 2] = 1;
-                m.map[robot.currentPosition.x][robot.currentPosition.y - 3] = 1;
-                m.map[robot.currentPosition.x][robot.currentPosition.y - 4] = 1;
+                try{
+                    m.map[robot.currentPosition.x][robot.currentPosition.y - 2] = 1;
+                    m.map[robot.currentPosition.x][robot.currentPosition.y - 3] = 1;
+                    m.map[robot.currentPosition.x][robot.currentPosition.y - 4] = 1;
+                    m.map[robot.currentPosition.x][robot.currentPosition.y - 5] = 1;
+                } catch(Exception e){}
             }
 
             //Sensor 5
@@ -544,14 +660,19 @@ public class ActualRun {
                         m.map[robot.currentPosition.x + 1][robot.currentPosition.y - 1 - results[4]] = 1;
                     }
                 } catch(ArrayIndexOutOfBoundsException e){
-                    for(int i = 1; i < results[3]; i++){
-                        m.map[robot.currentPosition.x + 1][robot.currentPosition.y - 1 - i] = 1;
-                    }
+                    try{
+                        for(int i = 1; i < results[3]; i++){
+                            m.map[robot.currentPosition.x + 1][robot.currentPosition.y - 1 - i] = 1;
+                        }
+                    } catch(Exception e2){}
                 }
             } else{
-                m.map[robot.currentPosition.x + 1][robot.currentPosition.y - 2] = 1;
-                m.map[robot.currentPosition.x + 1][robot.currentPosition.y - 3] = 1;
-                m.map[robot.currentPosition.x + 1][robot.currentPosition.y - 4] = 1;
+                try{
+                    m.map[robot.currentPosition.x + 1][robot.currentPosition.y - 2] = 1;
+                    m.map[robot.currentPosition.x + 1][robot.currentPosition.y - 3] = 1;
+                    m.map[robot.currentPosition.x + 1][robot.currentPosition.y - 4] = 1;
+                    m.map[robot.currentPosition.x + 1][robot.currentPosition.y - 5] = 1;
+                } catch(Exception e){}
             }
 
             //Sensor 6
@@ -563,15 +684,22 @@ public class ActualRun {
                         m.map[robot.currentPosition.x + 1 + results[5]][robot.currentPosition.y - 1] = 1;
                     }
                 } catch(ArrayIndexOutOfBoundsException e){
-                    for(int i = 1; i < results[5]; i++){
-                        m.map[robot.currentPosition.x + 1 + i][robot.currentPosition.y - 1] = 1;
-                    }
+                    try{
+                        for(int i = 1; i < results[5]; i++){
+                            m.map[robot.currentPosition.x + 1 + i][robot.currentPosition.y - 1] = 1;
+                        }
+                    } catch(Exception e2){}
                 }
             } else{
-                m.map[robot.currentPosition.x + 2][robot.currentPosition.y - 1] = 1;
-                m.map[robot.currentPosition.x + 3][robot.currentPosition.y - 1] = 1;
-                m.map[robot.currentPosition.x + 4][robot.currentPosition.y - 1] = 1;
-                m.map[robot.currentPosition.x + 5][robot.currentPosition.y - 1] = 1;
+                try{
+                    m.map[robot.currentPosition.x + 2][robot.currentPosition.y - 1] = 1;
+                    m.map[robot.currentPosition.x + 3][robot.currentPosition.y - 1] = 1;
+                    m.map[robot.currentPosition.x + 4][robot.currentPosition.y - 1] = 1;
+                    m.map[robot.currentPosition.x + 5][robot.currentPosition.y - 1] = 1;
+                    m.map[robot.currentPosition.x + 6][robot.currentPosition.y - 1] = 1;
+                    m.map[robot.currentPosition.x + 7][robot.currentPosition.y - 1] = 1;
+                    m.map[robot.currentPosition.x + 8][robot.currentPosition.y - 1] = 1;
+                } catch(Exception e){}
             }
         }
 
@@ -580,7 +708,7 @@ public class ActualRun {
     private void explore(){
 
         while(!m.isBackAtStart) {
-            updateAndroid();
+            //updateAndroid();
             if(checkCalibration()){
                 connection.sendMessage("sC");
                 connection.getMessage();
@@ -594,8 +722,9 @@ public class ActualRun {
                 turnRight();
                 move();
             } else {
-                turnRight();
+                turnBack();
             }
+            updateAndroid();
             if(robot.currentPosition.x == 1 && robot.currentPosition.y == 1){
                 m.isBackAtStart = true;
             }
@@ -606,6 +735,7 @@ public class ActualRun {
         } else if(robot.currentDirection == 'S'){
             turnBack();
         }
+        updateAndroid();
     }
 
     private boolean checkLeft(){
@@ -698,22 +828,33 @@ public class ActualRun {
         return res;
     }
 
-    private void fastestPath(){
+    private void processFastestPath(){
         for(int i = 0; i < path.length; i++){
             switch(path[i]) {
                 case 'M':
-                    move();
+                    int j = 1;
+                    for(; i < path.length; i++){
+                        if(i+1 < path.length && path[i+1] == 'M'){
+                            j++;
+                        } else break;
+                    }
+                    fastestMoves += 'M';
+                    fastestMoves += j;
                     break;
                 case 'L':
-                    turnLeft();
+                    fastestMoves += 'L';
                     break;
                 case 'R':
-                    turnRight();
+                    fastestMoves += 'R';
                     break;
                 case 'B':
-                    turnBack();
+                    fastestMoves += 'B';
             }
         }
+    }
+
+    private void fastestPath(){
+        connection.sendMessage(fastestMoves);
     }
 
     private void updateAndroid(){
@@ -722,10 +863,11 @@ public class ActualRun {
         else if(robot.currentDirection == 'S') robotDirection = "d";
         else if(robot.currentDirection == 'E') robotDirection = "r";
         else if(robot.currentDirection == 'W') robotDirection = "l";
-        connection.sendMessage("bloc_{" + robot.currentPosition.x + "," + robot.currentPosition.y + "," + robotDirection + "}");
+        /*connection.sendMessage("bloc_{" + robot.currentPosition.x + "," + robot.currentPosition.y + "," + robotDirection + "}");
         connection.getMessage();
         connection.sendMessage("bmap_{" + m.getMDFExplored() + "," + m.getMDFObstacle() + "}");
-        connection.getMessage();
+        connection.getMessage();*/
+        connection.sendMessage("bmap_{" + robot.currentPosition.x + "," + robot.currentPosition.y + "," + robotDirection + "," + m.getMDFExplored() + "," + m.getMDFObstacle() + "}");
     }
 
     private boolean checkCalibration(){
